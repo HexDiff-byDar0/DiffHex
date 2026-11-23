@@ -1,0 +1,27 @@
+name: deploy-neocities
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/indexclaude.html'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload web app to Neocities as index.html
+        env:
+          KEY: ${{ secrets.NEOCITIES_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::warning::Brak sekretu NEOCITIES_API_KEY - pomijam deploy na Neocities. Dodaj go w Settings > Secrets and variables > Actions."
+            exit 0
+          fi
+          code=$(curl -sS -o resp.txt -w "%{http_code}" -H "Authorization: Bearer $KEY" \
+            -F "index.html=@app/indexclaude.html" https://neocities.org/api/upload)
+          echo "HTTP $code"; cat resp.txt
+          test "$code" = "200"
+          echo "Wgrano app/indexclaude.html -> Neocities (index.html)."
