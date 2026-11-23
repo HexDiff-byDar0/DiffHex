@@ -14,6 +14,9 @@ const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".
 let win = null;
 let serverPort = 0;
 
+// Firebase autoryzuje domyslnie "localhost"; laduj przez localhost i wymus jego mapowanie na nasz serwer.
+app.commandLine.appendSwitch("host-resolver-rules", "MAP localhost 127.0.0.1");
+
 /* Lokalny serwer http://127.0.0.1 – Firebase (logowanie) i localStorage wymagaja http/https,
    a nie file://, dlatego aplikacja serwuje swoja zawartosc lokalnie. */
 function startServer(cb) {
@@ -141,7 +144,7 @@ function createWindow() {
     try { shell.openExternal(url); } catch (_) {}
     return { action: "deny" };
   });
-  win.loadURL(`http://127.0.0.1:${serverPort}/indexclaude.html`);
+  win.loadURL(`http://localhost:${serverPort}/indexclaude.html`);
   win.on("closed", () => { win = null; });
 }
 
