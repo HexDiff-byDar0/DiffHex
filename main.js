@@ -1,12 +1,39 @@
 "use strict";
-const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require("electron");
+const { app, BrowserWindow, dialog, shell, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const http = require("http");
 const https = require("https");
 
 const REPO = "HexDiff-byDar0/DiffHex";
 const FILE_EXTS = [".bin", ".ori", ".mod", ".mpc", ".dtf", ".kp", ".frf", ".dec"];
+const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript",
+  ".css": "text/css", ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg",
+  ".svg": "image/svg+xml", ".ico": "image/x-icon", ".webmanifest": "application/manifest+json",
+  ".woff": "font/woff", ".woff2": "font/woff2", ".ttf": "font/ttf", ".map": "application/json" };
 let win = null;
+let serverPort = 0;
+
+/* Lokalny serwer http://127.0.0.1 – Firebase (logowanie) i localStorage wymagaja http/https,
+   a nie file://, dlatego aplikacja serwuje swoja zawartosc lokalnie. */
+function startServer(cb) {
+  const root = path.join(__dirname, "app");
+  const srv = http.createServer((req, res) => {
+    try {
+      let rel = decodeURIComponent((req.url || "/").split("?")[0]);
+      if (rel === "/" || rel === "") rel = "/indexclaude.html";
+      const fp = path.normalize(path.join(root, rel));
+      if (fp !== root && !fp.startsWith(root + path.sep)) { res.writeHead(403); return res.end("forbidden"); }
+      fs.readFile(fp, (err, data) => {
+        if (err) { res.writeHead(404); return res.end("not found"); }
+        res.writeHead(200, { "Content-Type": MIME[path.extname(fp).toLowerCase()] || "application/octet-stream" });
+        res.end(data);
+      });
+    } catch (e) { res.writeHead(500); res.end("error"); }
+  });
+  srv.on("error", () => cb && cb());
+  srv.listen(0, "127.0.0.1", () => { serverPort = srv.address().port; cb && cb(); });
+}
 
 /* ---- pliki przekazane z systemu (skojarzenie .bin / "Otworz za pomoca") ---- */
 function fileArgs(argv) {
@@ -42,8 +69,7 @@ function cmpVer(a, b) {
   const pb = String(b).replace(/^v/i, "").split(".").map(n => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
     const x = pa[i] || 0, y = pb[i] || 0;
-    if (x > y) return 1;
-    if (x < y) return -1;
+    if (x > y) return 1; if (x < y) return -1;
   }
   return 0;
 }
@@ -51,8 +77,7 @@ function ghLatest(cb) {
   const opts = { headers: { "User-Agent": "DiffHex-Updater", "Accept": "application/vnd.github+json" } };
   const req = https.get(`https://api.github.com/repos/${REPO}/releases/latest`, opts, res => {
     if (res.statusCode && res.statusCode >= 400) { res.resume(); return cb(new Error("HTTP " + res.statusCode)); }
-    let d = "";
-    res.on("data", c => { d += c; });
+    let d = ""; res.on("data", c => { d += c; });
     res.on("end", () => { try { cb(null, JSON.parse(d)); } catch (e) { cb(e); } });
   });
   req.on("error", cb);
@@ -68,13 +93,13 @@ function checkUpdates(manual) {
     const latest = rel.tag_name, cur = app.getVersion();
     if (cmpVer(latest, cur) > 0) {
       const asset = (rel.assets || []).find(a => /\.exe$/i.test(a.name || ""));
-      const url = asset ? asset.browser_download_url : rel.html_url;
+      const dl = asset ? asset.browser_download_url : rel.html_url;
       dialog.showMessageBox(win, {
         type: "info", buttons: ["Pobierz", "Pozniej"], defaultId: 0, cancelId: 1,
         title: "Dostepna aktualizacja",
         message: `Dostepna jest nowsza wersja DiffHex (${latest}).`,
         detail: `Masz wersje ${cur}. Pobrac instalator teraz?`
-      }).then(r => { if (r.response === 0) shell.openExternal(url); }).catch(() => {});
+      }).then(r => { if (r.response === 0) shell.openExternal(dl); }).catch(() => {});
     } else if (manual) {
       dialog.showMessageBox(win, { type: "info", title: "Aktualizacje",
         message: "Masz najnowsza wersje DiffHex.", detail: `Wersja ${cur}.` });
@@ -82,49 +107,44 @@ function checkUpdates(manual) {
   });
 }
 
-/* ---- menu ---- */
 function buildMenu() {
   return Menu.buildFromTemplate([
     { label: "Plik", submenu: [{ role: "quit", label: "Zamknij" }] },
     { label: "Edycja", submenu: [
       { role: "undo", label: "Cofnij" }, { role: "redo", label: "Ponow" }, { type: "separator" },
       { role: "cut", label: "Wytnij" }, { role: "copy", label: "Kopiuj" }, { role: "paste", label: "Wklej" },
-      { role: "selectAll", label: "Zaznacz wszystko" }
-    ] },
+      { role: "selectAll", label: "Zaznacz wszystko" } ] },
     { label: "Widok", submenu: [
       { role: "reload", label: "Odswiez" }, { role: "toggleDevTools", label: "Narzedzia programisty" },
-      { type: "separator" },
-      { role: "resetZoom", label: "Zoom 100%" }, { role: "zoomIn", label: "Powieksz" }, { role: "zoomOut", label: "Pomniejsz" },
-      { type: "separator" }, { role: "togglefullscreen", label: "Pelny ekran" }
-    ] },
+      { type: "separator" }, { role: "resetZoom", label: "Zoom 100%" },
+      { role: "zoomIn", label: "Powieksz" }, { role: "zoomOut", label: "Pomniejsz" },
+      { type: "separator" }, { role: "togglefullscreen", label: "Pelny ekran" } ] },
     { label: "Pomoc", submenu: [
       { label: "Sprawdz aktualizacje", click: () => checkUpdates(true) },
       { label: "Strona projektu (GitHub)", click: () => shell.openExternal(`https://github.com/${REPO}`) },
       { type: "separator" },
-      { label: "O programie", click: () => dialog.showMessageBox(win, {
-        type: "info", title: "DiffHex",
-        message: "DiffHex " + app.getVersion(),
-        detail: "Edytor i porownywarka plikow binarnych ECU.\n(c) dar0" }) }
-    ] }
+      { label: "O programie", click: () => dialog.showMessageBox(win, { type: "info", title: "DiffHex",
+        message: "DiffHex " + app.getVersion(), detail: "Edytor i porownywarka plikow binarnych ECU.\n(c) dar0" }) } ] }
   ]);
 }
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 1280, height: 860, minWidth: 900, minHeight: 600,
-    backgroundColor: "#111111",
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      contextIsolation: false,
-      nodeIntegration: false,
-      spellcheck: false
-    }
+    width: 1280, height: 860, minWidth: 900, minHeight: 600, backgroundColor: "#111111",
+    webPreferences: { preload: path.join(__dirname, "preload.js"),
+      contextIsolation: false, nodeIntegration: false, spellcheck: false }
   });
-  win.loadFile(path.join(__dirname, "app", "indexclaude.html"));
+  // okna wyskakujace (logowanie Google / Firebase) otwieraj jako osobne okno; reszta linkow -> przegladarka
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (/accounts\.google\.com|firebaseapp\.com|googleusercontent|google\.com\/o\/oauth|__\/auth/i.test(url))
+      return { action: "allow" };
+    try { shell.openExternal(url); } catch (_) {}
+    return { action: "deny" };
+  });
+  win.loadURL(`http://127.0.0.1:${serverPort}/indexclaude.html`);
   win.on("closed", () => { win = null; });
 }
 
-/* ---- jedna instancja: kolejne dwukliki na .bin trafiaja do dzialajacego okna ---- */
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
@@ -133,14 +153,14 @@ if (!gotLock) {
     if (win) { if (win.isMinimized()) win.restore(); win.focus(); sendFiles(fileArgs(argv)); }
   });
   app.on("open-file", (e, p) => { e.preventDefault(); if (win) sendFiles([p]); });
-
   app.whenReady().then(() => {
-    Menu.setApplicationMenu(buildMenu());
-    createWindow();
-    sendFiles(fileArgs(process.argv));
-    setTimeout(() => checkUpdates(false), 4000);
+    startServer(() => {
+      Menu.setApplicationMenu(buildMenu());
+      createWindow();
+      sendFiles(fileArgs(process.argv));
+      setTimeout(() => checkUpdates(false), 4000);
+    });
   });
-
   app.on("activate", () => { if (!win) createWindow(); });
   app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
 }

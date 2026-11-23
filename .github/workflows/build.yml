@@ -6,9 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Wersja wydania (musi zgadzac sie z package.json), np. 2.36.0'
+        description: 'Wersja wydania (musi zgadzac sie z package.json), np. 2.37.0'
         required: true
-        default: '2.36.0'
+        default: '2.37.0'
+      notes:
+        description: 'Opis zmian do Release (markdown)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -42,5 +46,7 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.name }}
           name: DiffHex ${{ steps.tag.outputs.name }}
+          body: ${{ github.event.inputs.notes }}
+          generate_release_notes: true
           files: dist/DiffHex-Setup-*.exe
           fail_on_unmatched_files: true

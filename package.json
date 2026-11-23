@@ -1,12 +1,15 @@
 {
   "name": "diffhex",
   "productName": "DiffHex",
-  "version": "2.36.0",
+  "version": "2.37.0",
   "description": "Edytor i porownywarka plikow binarnych ECU",
   "author": "dar0",
   "license": "UNLICENSED",
   "main": "main.js",
-  "repository": { "type": "git", "url": "https://github.com/HexDiff-byDar0/DiffHex.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HexDiff-byDar0/DiffHex.git"
+  },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win --publish never"
@@ -18,10 +21,17 @@
   "build": {
     "appId": "com.dar0.diffhex",
     "productName": "DiffHex",
-    "files": ["main.js", "preload.js", "app/**/*"],
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
     "win": {
-      "target": ["nsis"],
-      "artifactName": "DiffHex-Setup-${version}.${ext}"
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "DiffHex-Setup-${version}.${ext}",
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -29,10 +39,21 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "DiffHex"
+      "shortcutName": "DiffHex",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
     },
     "fileAssociations": [
-      { "ext": "bin", "name": "ECU binary", "description": "Plik binarny ECU", "role": "Editor" }
-    ]
+      {
+        "ext": "bin",
+        "name": "ECU binary",
+        "description": "Plik binarny ECU",
+        "role": "Editor"
+      }
+    ],
+    "directories": {
+      "buildResources": "build"
+    }
   }
 }
