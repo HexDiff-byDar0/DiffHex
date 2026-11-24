@@ -22885,7 +22885,9 @@ function chgBarDraw(){if(!chgB)return;const b=chgB,cv=$("#chgCv"),dpr=devicePixe
 ((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Aplikacja desktopowa (Windows): naprawione logowanie i chmura (Firebase). Program działa teraz przez lokalny serwer http zamiast file://, więc konto, logowanie Google i skrypty zapisane w chmurze są dostępne także w wersji na komputer. Dodano nową ikonę aplikacji.": "Desktop app (Windows): fixed sign-in and cloud (Firebase). The app now runs via a local http server instead of file://, so account, Google sign-in and cloud-saved scripts work in the desktop build too. Added a new app icon."});
 ((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Aplikacja desktopowa: logowanie Firebase ładowane przez localhost (domena autoryzowana domyślnie), co usuwa błąd „ta domena nie jest dodana w Firebase”. Logowanie Google i konto działają w wersji na komputer.": "Desktop app: Firebase sign-in now loads via localhost (authorized by default), removing the \"domain not added in Firebase\" error. Google sign-in and account work in the desktop build."});
 ((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Drobna poprawka interfejsu: w oknie „Co nowego” plakietka „nowe” nie nachodzi już na tekst opisu zmian (szerokość kolumny z numerem wersji dopasowuje się do treści).": "Minor UI fix: in the What's new panel the “new” badge no longer overlaps the change text (the version column now sizes to its content)."});
+((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Moduł sum kontrolnych: wykrywanie algorytmu z 3 plików (oryginał, zmodyfikowany, zmodyfikowany z policzoną sumą) — DiffHex sam znajduje, gdzie leży suma i jak jest liczona, wykorzystując to, że „zmodyfikowany” i „zmodyfikowany + suma” różnią się tylko polem sumy. Nowa biblioteka presetów z podziałem na producenta i rodzinę sterownika (eksport/import JSON); każdy preset można policzyć i wpisać w dowolnym pliku.": "Checksum module: detect the algorithm from 3 files (original, modified, modified-with-checksum) — DiffHex finds where the checksum sits and how it is computed, using the fact that “modified” and “modified + checksum” differ only in the checksum field. New preset library grouped by manufacturer and controller family (JSON export/import); any preset can be computed and written into any file.", "Wykryj algorytm z 3 plików": "Detect algorithm from 3 files", "Wczytaj trzy pliki tego samego sterownika: oryginał, zmodyfikowany i zmodyfikowany z policzoną sumą. DiffHex sam znajdzie, gdzie leży suma i jak jest liczona.": "Load three files of the same controller: original, modified, and modified with the checksum corrected. DiffHex finds where the checksum is and how it is computed.", "Oryginał": "Original", "Zmodyfikowany": "Modified", "Zmod. + suma": "Modified + checksum", "Wykryj": "Detect", "Wykrywam…": "Detecting…", "Biblioteka presetów": "Preset library", "Zapisane schematy sum per producent i rodzina sterownika. Zastosuj preset, żeby policzyć i wpisać sumę w dowolnym pliku.": "Saved checksum schemes per manufacturer and controller family. Apply a preset to compute and write the checksum into any file.", "Producent": "Manufacturer", "Rodzina": "Family", "Zapisz preset": "Save preset", "Zapisz jako preset": "Save as preset", "Zastosuj": "Apply", "Eksport JSON": "Export JSON", "Import JSON": "Import JSON", "Pole sumy: ": "Checksum field: ", "zmiana: ": "change: ", "Nie rozpoznano standardowego algorytmu – dodaj definicję ręcznie, znając adres pola sumy powyżej.": "Standard algorithm not recognized — add a definition manually using the checksum field address above.", "Zapisano preset.": "Preset saved.", "Brak presetów. Wykryj algorytm z 3 plików albo zapisz ręcznie powyżej.": "No presets. Detect the algorithm from 3 files or save one manually above.", "Uzupełnij producenta i rodzinę, potem „Zapisz preset”.": "Fill in manufacturer and family, then “Save preset”."});
 const CHANGELOG=[
+  ["2.38",_L("Moduł sum kontrolnych: wykrywanie algorytmu z 3 plików (oryginał, zmodyfikowany, zmodyfikowany z policzoną sumą) — DiffHex sam znajduje, gdzie leży suma i jak jest liczona, wykorzystując to, że „zmodyfikowany” i „zmodyfikowany + suma” różnią się tylko polem sumy. Nowa biblioteka presetów z podziałem na producenta i rodzinę sterownika (eksport/import JSON); każdy preset można policzyć i wpisać w dowolnym pliku.")],
   ["2.37.2",_L("Drobna poprawka interfejsu: w oknie „Co nowego” plakietka „nowe” nie nachodzi już na tekst opisu zmian (szerokość kolumny z numerem wersji dopasowuje się do treści).")],
   ["2.37.1",_L("Aplikacja desktopowa: logowanie Firebase ładowane przez localhost (domena autoryzowana domyślnie), co usuwa błąd „ta domena nie jest dodana w Firebase”. Logowanie Google i konto działają w wersji na komputer.")],
   ["2.37",_L("Aplikacja desktopowa (Windows): naprawione logowanie i chmura (Firebase). Program działa teraz przez lokalny serwer http zamiast file://, więc konto, logowanie Google i skrypty zapisane w chmurze są dostępne także w wersji na komputer. Dodano nową ikonę aplikacji.")],
@@ -23566,6 +23568,17 @@ const csM=xModal("csM","🧮 "+_L("Sumy kontrolne"),
     <label>${_L("od")} <input type="text" id="csfA" placeholder="0000"></label><label>${_L("do")} <input type="text" id="csfB" placeholder="7FFFB"></label>
     <label>${_L("zapis pod")} <input type="text" id="csfAt" placeholder="7FFFC"></label><select id="csfBe"><option value="1">BE</option><option value="0">LE</option></select>
     <input type="text" id="csfN" placeholder="${esc(_L("nazwa (opcjonalnie)"))}" style="width:14em"><button type="button" class="primary" id="csfOk">${_L("Dodaj")}</button><button type="button" id="csfNo">${_L("Anuluj")}</button></div>
+  <h3>🔎 ${_L("Wykryj algorytm z 3 plików")}</h3>
+  <p class="k">${_L("Wczytaj trzy pliki tego samego sterownika: oryginał, zmodyfikowany i zmodyfikowany z policzoną sumą. DiffHex sam znajdzie, gdzie leży suma i jak jest liczona.")}</p>
+  <div class="xrow"><label>${_L("Oryginał")} <input type="file" id="d3a"></label><label>${_L("Zmodyfikowany")} <input type="file" id="d3b"></label><label>${_L("Zmod. + suma")} <input type="file" id="d3c"></label><button type="button" class="primary" id="d3go">🔎 ${_L("Wykryj")}</button></div>
+  <div class="xtbl" id="d3resW" hidden><table id="d3res"></table></div>
+  <p class="note" id="d3msg" style="padding-left:0"></p>
+  <h3>📚 ${_L("Biblioteka presetów")}</h3>
+  <p class="k">${_L("Zapisane schematy sum per producent i rodzina sterownika. Zastosuj preset, żeby policzyć i wpisać sumę w dowolnym pliku.")}</p>
+  <div class="xrow xform"><label>${_L("Producent")} <input type="text" id="prVendor" list="prVendors" placeholder="Bosch" style="width:9em"></label><label>${_L("Rodzina")} <input type="text" id="prFamily" list="prFamilies" placeholder="MED17.5" style="width:9em"></label><input type="text" id="prName" placeholder="${esc(_L("nazwa (opcjonalnie)"))}" style="width:12em"><datalist id="prVendors"></datalist><datalist id="prFamilies"></datalist></div>
+  <div class="xrow xform"><select id="prAlg"></select><label>${_L("od")} <input type="text" id="prA" placeholder="0000"></label><label>${_L("do")} <input type="text" id="prB" placeholder="1FFFB"></label><label>${_L("zapis pod")} <input type="text" id="prAt" placeholder="1FFFC"></label><select id="prBe"><option value="1">BE</option><option value="0">LE</option></select><button type="button" class="primary" id="prSave">${_L("Zapisz preset")}</button></div>
+  <div class="xtbl"><table id="prTbl"></table></div>
+  <div class="xrow"><button type="button" id="prExport">${_L("Eksport JSON")}</button><button type="button" id="prImport">${_L("Import JSON")}</button><input type="file" id="prFile" accept=".json,application/json" hidden></div>
   <h3>${_L("Znajdź sumę w pliku")}</h3>
   <p class="k">${_L("Wybierz plik, w którym suma na pewno jest poprawna – najlepiej oryginał (ORI) prosto ze sterownika. Program liczy CRC-16/32, Adler-32, Fletcher-16 oraz sumy bajtów i słów dla bloków zaczynających się od początku pliku albo za obszarami wypełnienia FF/00 i szuka wyniku tuż za blokiem albo tuż przed nim.")}</p>
   <div class="xrow">${_L("Szukaj w:")} <select id="csPane"></select><label class="chk"><input type="checkbox" id="csSel"> ${_L("tylko w zakresie zaznaczenia")}</label>
@@ -23600,7 +23613,7 @@ function csResRender(){const w=$("#csResW");if(!csHits.length){w.hidden=true;ret
         <td class="m">0x${hx(h.a,6)}–0x${hx(h.b,6)} <span class="k">(${(h.b-h.a+1).toLocaleString(LOC)} B)</span></td><td class="m">0x${hx(h.at,6)} ${h.be?"BE":"LE"} ${h.t===2?_L("(przed blokiem)"):_L("(za blokiem)")}</td>
         <td>${h.also?(also.length?also.join(", "):"—"):`<span class="k">${_L("nie sprawdzano")}</span>`}</td><td>${dup?`<span class="k">${_L("zapisana")}</span>`:`<button type="button" class="xmini primary" data-csadd="${k}">${_L("Zapisz")}</button>`}</td></tr>`}).join("")+
     (csHits.length>300?`<tr><td colspan="6" class="note">${_L`…i ${csHits.length-300} kolejnych – zawęź wyszukiwanie zaznaczeniem`}</td></tr>`:"")}
-function openCs(){csRender();xOpen(csM)}
+function openCs(){csRender();prRender();xOpen(csM)}
 async function csGoSearch(){const pi=+$("#csPane").value,p=panes[pi];if(!p||!p.data.length){toast(_L("Wczytaj plik, w którym chcesz szukać sumy."));return}
   const selOnly=$("#csSel").checked;if(selOnly&&!p.sel){toast(_L`Zaznacz w oknie ${p.tag} zakres, w którym jest blok z sumą.`);return}
   if(selOnly&&p.sel[1]-p.sel[0]<64){toast(_L("Zaznaczenie jest za krótkie – blok z sumą musi mieć co najmniej 64 B."));return}
@@ -23672,6 +23685,85 @@ async function csGuard(p){if(!csGuardOn||!csDefs.length||!p.data.length)return t
   if(r==="fix"){const n=csFix(p,bad.map(x=>x.d));toast(_L`Poprawiono ${n} sum(y) w oknie ${p.tag}.`)}
   return true}
 {const s0=save;save=async function(p){if(cloud&&p&&p.data&&p.data.length&&!(await csGuard(p)))return false;return s0(p)}}
+
+/* ===== 2.38: wykrywanie algorytmu z 3 plików + biblioteka presetów (producent/rodzina) ===== */
+var csPresets=[];
+try{const o=JSON.parse(localStorage.getItem("hexdiff.csPresets")||"null");if(o&&Array.isArray(o.list))csPresets=o.list.filter(p=>p&&typeof p.alg==="string"&&ALGS[p.alg]&&[p.a,p.b,p.at].every(Number.isInteger));}catch(_){}
+function csPStore(){try{localStorage.setItem("hexdiff.csPresets",JSON.stringify({list:csPresets}))}catch(_){}}
+function diffRuns(x,y){const n=Math.min(x.length,y.length),r=[];let i=0;while(i<n){if(x[i]!==y[i]){let j=i+1;while(j<n&&x[j]!==y[j])j++;r.push([i,j-1]);i=j}else i++}return r}
+function readU8(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(new Uint8Array(fr.result));fr.onerror=()=>rej(fr.error||new Error("read"));fr.readAsArrayBuffer(file)})}
+var d3files={a:null,b:null,c:null},d3found=[];
+async function csDetect3(orig,mod,modcs){
+  if(!(orig.length===mod.length&&mod.length===modcs.length))throw new Error(_L`Pliki mają różne rozmiary (${orig.length} / ${mod.length} / ${modcs.length} B) – muszą być tą samą wersją.`);
+  const fields=diffRuns(mod,modcs),edits=diffRuns(orig,mod);
+  if(!fields.length)throw new Error(_L("„Zmodyfikowany” i „zmodyfikowany + suma” są identyczne – w trzecim pliku nie ma poprawionej sumy."));
+  const r=await csScan(modcs.slice(),{selA:-1,selB:-1,maxHits:4000,minLen:32});
+  const seen=new Set(),found=[];
+  for(const h of r.hits){
+    if(!fields.some(f=>h.at>=f[0]&&h.at+h.w-1<=f[1]))continue;
+    const def={alg:h.k,a:h.a,b:h.b,at:h.at,be:h.be};
+    const eo=csEval(def,orig);if(!eo||!eo.ok)continue;
+    if(edits.length&&!edits.every(([a,b])=>a>=h.a&&b<=h.b))continue;
+    const key=h.k+"|"+h.a+"|"+h.b+"|"+h.at+"|"+(h.be?1:0);if(seen.has(key))continue;seen.add(key);
+    found.push({...h,conf:csConf(h)});
+  }
+  found.sort((x,y)=>y.conf-x.conf||(y.b-y.a)-(x.b-x.a)||x.at-y.at);
+  return {fields,edits,found};
+}
+function d3Render(found,fields,edits){
+  const w=$("#d3resW"),msg=$("#d3msg");
+  msg.textContent=_L("Pole sumy: ")+fields.map(f=>`0x${hx(f[0],6)}–0x${hx(f[1],6)} (${f[1]-f[0]+1} B)`).join(", ")+
+    (edits.length?"  ·  "+_L("zmiana: ")+edits.map(e=>`0x${hx(e[0],6)}–0x${hx(e[1],6)}`).join(", "):"");
+  if(!found.length){w.hidden=true;msg.textContent+="  ·  "+_L("Nie rozpoznano standardowego algorytmu – dodaj definicję ręcznie, znając adres pola sumy powyżej.");return}
+  w.hidden=false;const star=n=>"★".repeat(n)+"☆".repeat(3-n);
+  $("#d3res").innerHTML=`<tr><th>${_L("Pewność")}</th><th>${_L("Algorytm")}</th><th>${_L("Zakres")}</th><th>${_L("Zapis")}</th><th></th></tr>`+
+    found.map((h,k)=>`<tr><td title="${esc(_L("★★★ CRC/Adler – przypadkowa zgodność praktycznie niemożliwa"))}">${star(h.conf)}</td><td>${esc(csAlgName(h.k))}</td><td class="m">0x${hx(h.a,6)}–0x${hx(h.b,6)} <span class="k">(${(h.b-h.a+1).toLocaleString(LOC)} B)</span></td><td class="m">0x${hx(h.at,6)} ${h.be?"BE":"LE"} · ${h.w} B</td><td><button type="button" class="xmini primary" data-d3save="${k}">${_L("Zapisz jako preset")}</button></td></tr>`).join("");
+}
+function prFillAlg(sel){sel.innerHTML=Object.keys(ALGS).filter(k=>ALGS[k].w>=2).map(k=>`<option value="${k}">${esc(k)} – ${esc(csAlgName(k))} (${ALGS[k].w} B)</option>`).join("")}
+function prVendors(){return [...new Set(csPresets.map(p=>p.vendor).filter(Boolean))].sort()}
+function prFamilies(v){return [...new Set(csPresets.filter(p=>!v||p.vendor===v).map(p=>p.family).filter(Boolean))].sort()}
+function prRender(){
+  if(!$("#prAlg").options.length)prFillAlg($("#prAlg"));
+  $("#prVendors").innerHTML=prVendors().map(v=>`<option value="${esc(v)}">`).join("");
+  $("#prFamilies").innerHTML=prFamilies(($("#prVendor").value||"").trim()).map(v=>`<option value="${esc(v)}">`).join("");
+  if(!csPresets.length){$("#prTbl").innerHTML=`<tr><td class="note">${_L("Brak presetów. Wykryj algorytm z 3 plików albo zapisz ręcznie powyżej.")}</td></tr>`;return}
+  const ps=csPresets.map((p,k)=>({p,k})).sort((x,y)=>(x.p.vendor||"").localeCompare(y.p.vendor||"")||(x.p.family||"").localeCompare(y.p.family||""));
+  $("#prTbl").innerHTML=`<tr><th>${_L("Producent")}</th><th>${_L("Rodzina")}</th><th>${_L("Nazwa")}</th><th>${_L("Algorytm")}</th><th>${_L("Zakres")}</th><th>${_L("Zapis")}</th><th></th></tr>`+
+    ps.map(({p,k})=>`<tr><td>${esc(p.vendor||"—")}</td><td>${esc(p.family||"—")}</td><td>${esc(p.name||"—")}</td><td>${esc(csAlgName(p.alg))}</td><td class="m">0x${hx(p.a,6)}–0x${hx(p.b,6)}</td><td class="m">0x${hx(p.at,6)} ${p.be?"BE":"LE"} · ${ALGS[p.alg]?ALGS[p.alg].w:"?"} B</td>
+      <td><button type="button" class="xmini primary" data-prap="${k}" title="${esc(_L("Policz i wpisz w aktywnym oknie"))}">⤵ ${_L("Zastosuj")}</button><button type="button" class="xmini" data-prcalc="${k}" title="${esc(_L("Policz i pokaż, bez zapisu"))}">＝</button><button type="button" class="xmini" data-prguard="${k}" title="${esc(_L("Dodaj do sum sprawdzanych przy zapisie"))}">👁</button><button type="button" class="xmini" data-prdel="${k}" title="${esc(_L("Usuń preset"))}">✕</button></td></tr>`).join("");
+}
+csM.addEventListener("click",async e=>{const t=e.target,k=t.dataset;
+  if(t.id==="d3go"){if(!d3files.a||!d3files.b||!d3files.c){toast(_L("Wczytaj wszystkie trzy pliki: oryginał, zmodyfikowany i zmodyfikowany z sumą."));return}
+    t.disabled=true;$("#d3resW").hidden=true;$("#d3msg").textContent=_L("Wykrywam…");
+    try{const r=await csDetect3(d3files.a,d3files.b,d3files.c);d3found=r.found;d3Render(r.found,r.fields,r.edits)}
+    catch(err){$("#d3resW").hidden=true;$("#d3msg").textContent=(err&&err.message)||String(err)}
+    finally{t.disabled=false}return}
+  if(k.d3save!=null){const h=d3found[+k.d3save];if(!h)return;if(!$("#prAlg").options.length)prFillAlg($("#prAlg"));
+    $("#prAlg").value=h.k;$("#prA").value=hx(h.a,4);$("#prB").value=hx(h.b,4);$("#prAt").value=hx(h.at,4);$("#prBe").value=h.be?"1":"0";
+    $("#prName").focus();try{$("#prName").scrollIntoView({block:"center"})}catch(_){}toast(_L("Uzupełnij producenta i rodzinę, potem „Zapisz preset”."));return}
+  if(t.id==="prSave"){const a=xAddr($("#prA").value),b=xAddr($("#prB").value),at=xAddr($("#prAt").value),alg=$("#prAlg").value;
+    if([a,b,at].some(isNaN)){toast(_L("Podaj adresy w hex: od, do i miejsce zapisu."));return}if(b<a){toast(_L("Koniec zakresu musi być za początkiem."));return}if(!ALGS[alg]){toast(_L("Wybierz algorytm."));return}
+    const vendor=($("#prVendor").value||"").trim(),family=($("#prFamily").value||"").trim(),name=($("#prName").value||"").trim();
+    if(csPresets.some(p=>p.alg===alg&&p.a===a&&p.b===b&&p.at===at&&p.be===($("#prBe").value==="1")&&p.vendor===vendor&&p.family===family)){toast(_L("Taki preset już jest."));return}
+    csPresets.push({vendor,family,name,alg,a,b,at,be:$("#prBe").value==="1"});csPStore();prRender();toast(_L("Zapisano preset."));return}
+  if(k.prap!=null){const p=csPresets[+k.prap],pane=panes[act];if(!p||!pane.data.length){toast(_L("Wczytaj plik w aktywnym oknie."));return}if(paneLocked(pane)){lockMsg(_L`Okno ${pane.tag}`);return}
+    if(!csEval(p,pane.data)){toast(_L`Preset nie mieści się w pliku okna ${pane.tag}.`);return}
+    const n=csFix(pane,[p]);toast(n?_L`Policzono i wpisano sumę w oknie ${pane.tag}. Cofniesz przyciskiem Cofnij.`:_L("Suma była już poprawna – nic nie zmieniono."));return}
+  if(k.prcalc!=null){const p=csPresets[+k.prcalc],pane=panes[act];if(!p||!pane.data.length){toast(_L("Wczytaj plik w aktywnym oknie."));return}const ev=csEval(p,pane.data);
+    if(!ev){toast(_L("Preset nie mieści się w pliku aktywnego okna."));return}toast(ev.ok?_L`Suma się zgadza: ${hx(ev.calc,ev.w*2)} (okno ${pane.tag}).`:_L`Wyliczona: ${hx(ev.calc,ev.w*2)}, w pliku: ${hx(ev.stored,ev.w*2)} (okno ${pane.tag}).`);return}
+  if(k.prguard!=null){const p=csPresets[+k.prguard];if(csAdd({alg:p.alg,a:p.a,b:p.b,at:p.at,be:p.be,name:(p.name||((p.vendor||"")+" "+(p.family||"")).trim()||csAlgName(p.alg))}))toast(_L("Dodano do sum sprawdzanych przy zapisie."));return}
+  if(k.prdel!=null){const bb=t;if(bb.dataset.armed!=="1"){bb.dataset.armed="1";bb.textContent="?";setTimeout(()=>{bb.dataset.armed="";bb.textContent="✕"},2500);return}csPresets.splice(+k.prdel,1);csPStore();prRender();return}
+  if(t.id==="prExport"){const blob=new Blob([JSON.stringify({diffhexPresets:1,list:csPresets},null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="diffhex-presety-sum.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);return}
+  if(t.id==="prImport"){$("#prFile").click();return}
+});
+csM.addEventListener("change",async e=>{const t=e.target;
+  if(t.id==="d3a"||t.id==="d3b"||t.id==="d3c"){const key=t.id==="d3a"?"a":t.id==="d3b"?"b":"c";const f=t.files&&t.files[0];if(!f){d3files[key]=null;return}try{d3files[key]=await readU8(f)}catch(_){d3files[key]=null;toast(_L("Nie udało się wczytać pliku."))}return}
+  if(t.id==="prVendor"){$("#prFamilies").innerHTML=prFamilies((t.value||"").trim()).map(v=>`<option value="${esc(v)}">`).join("");return}
+  if(t.id==="prFile"){const f=t.files&&t.files[0];if(!f)return;try{const txt=await f.text(),o=JSON.parse(txt),list=Array.isArray(o)?o:(o&&o.list);if(!Array.isArray(list))throw new Error("fmt");let add=0;
+    for(const p of list){if(!(p&&typeof p.alg==="string"&&ALGS[p.alg]&&[p.a,p.b,p.at].every(Number.isInteger)))continue;const be=!!p.be,vendor=p.vendor||"",family=p.family||"";
+      if(!csPresets.some(q=>q.alg===p.alg&&q.a===p.a&&q.b===p.b&&q.at===p.at&&q.be===be&&q.vendor===vendor&&q.family===family)){csPresets.push({vendor,family,name:p.name||"",alg:p.alg,a:p.a,b:p.b,at:p.at,be});add++}}
+    csPStore();prRender();toast(_L`Zaimportowano ${add} presetów.`)}catch(_){toast(_L("Nieprawidłowy plik JSON z presetami."))}finally{t.value=""}return}
+});
 
 /* ================= 2. Maski ================= */
 function mkStore(){try{localStorage.setItem("hexdiff.masks",JSON.stringify({list:mkList,cmp:mkCmp,xfer:mkXfer}))}catch(_){}}
