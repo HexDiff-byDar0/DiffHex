@@ -1,7 +1,7 @@
 {
   "name": "diffhex",
   "productName": "DiffHex",
-  "version": "2.38.0",
+  "version": "2.39.0",
   "description": "Edytor i porownywarka plikow binarnych ECU",
   "author": "dar0",
   "license": "UNLICENSED",
@@ -45,12 +45,13 @@
       "installerHeaderIcon": "build/icon.ico"
     },
     "fileAssociations": [
-      {
-        "ext": "bin",
-        "name": "ECU binary",
-        "description": "Plik binarny ECU",
-        "role": "Editor"
-      }
+      { "ext": "bin", "name": "ECU binary", "description": "Plik binarny ECU", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "ori", "name": "DiffHex original", "description": "Plik oryginalny (DiffHex)", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "mod", "name": "DiffHex modified", "description": "Plik zmodyfikowany (DiffHex)", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "mpc", "name": "ECU map", "description": "Plik ECU (DiffHex)", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "dtf", "name": "ECU data", "description": "Plik ECU (DiffHex)", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "frf", "name": "ECU frf", "description": "Plik ECU (DiffHex)", "role": "Editor", "icon": "build/icon.ico" },
+      { "ext": "dec", "name": "ECU decoded", "description": "Plik ECU (DiffHex)", "role": "Editor", "icon": "build/icon.ico" }
     ],
     "directories": {
       "buildResources": "build"

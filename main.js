@@ -2,8 +2,10 @@
 const { app, BrowserWindow, dialog, shell, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const http = require("http");
 const https = require("https");
+const { spawn } = require("child_process");
 
 const REPO = "HexDiff-byDar0/DiffHex";
 const FILE_EXTS = [".bin", ".ori", ".mod", ".mpc", ".dtf", ".kp", ".frf", ".dec"];
@@ -86,6 +88,71 @@ function ghLatest(cb) {
   req.on("error", cb);
   req.setTimeout(12000, () => req.destroy(new Error("timeout")));
 }
+/* Pobranie pliku z GitHuba (browser_download_url przekierowuje na objects.githubusercontent.com). */
+function downloadTo(url, dest, onProgress, cb, redirects) {
+  redirects = redirects || 0;
+  if (redirects > 8) return cb(new Error("za duzo przekierowan"));
+  const opts = { headers: { "User-Agent": "DiffHex-Updater", "Accept": "application/octet-stream" } };
+  const req = https.get(url, opts, res => {
+    if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+      res.resume();
+      return downloadTo(res.headers.location, dest, onProgress, cb, redirects + 1);
+    }
+    if (res.statusCode !== 200) { res.resume(); return cb(new Error("HTTP " + res.statusCode)); }
+    const total = parseInt(res.headers["content-length"] || "0", 10);
+    let got = 0;
+    const out = fs.createWriteStream(dest);
+    res.on("data", c => { got += c.length; if (onProgress) onProgress(total ? got / total : -1); });
+    res.on("error", e => { try { out.close(); } catch (_) {} cb(e); });
+    out.on("error", e => cb(e));
+    res.pipe(out);
+    out.on("finish", () => out.close(() => cb(null)));
+  });
+  req.on("error", cb);
+  req.setTimeout(120000, () => req.destroy(new Error("timeout")));
+}
+
+/* Uruchomienie instalatora po cichu (/S), zamkniecie aplikacji aby NSIS mogl podmienic pliki.
+   Instalator electron-builder sam zamyka dzialajaca instancje i po instalacji uruchamia nowa wersje. */
+function runInstaller(file) {
+  try {
+    const child = spawn(file, ["/S", "--force-run"], { detached: true, stdio: "ignore" });
+    child.unref();
+    setTimeout(() => { try { app.quit(); } catch (_) {} }, 1500);
+  } catch (e) {
+    // awaryjnie: otworz instalator normalnie
+    shell.openPath(file).then(() => setTimeout(() => { try { app.quit(); } catch (_) {} }, 1500));
+  }
+}
+
+function doUpdate(latest, dlUrl) {
+  const dest = path.join(os.tmpdir(), `DiffHex-Setup-${String(latest).replace(/[^0-9.]/g, "")}.exe`);
+  const setProg = f => {
+    try {
+      if (f < 0) { win && win.setProgressBar(2); win && win.setTitle(`DiffHex – pobieranie aktualizacji...`); }
+      else { win && win.setProgressBar(f); win && win.setTitle(`DiffHex – pobieranie ${Math.round(f * 100)}%`); }
+    } catch (_) {}
+  };
+  setProg(0);
+  downloadTo(dlUrl, dest, setProg, err => {
+    try { win && win.setProgressBar(-1); win && win.setTitle("DiffHex"); } catch (_) {}
+    if (err) {
+      dialog.showMessageBox(win, { type: "error", title: "Aktualizacja",
+        message: "Nie udalo sie pobrac aktualizacji.",
+        detail: String(err.message || err) + "\n\nMozesz pobrac ja recznie ze strony projektu.",
+        buttons: ["OK", "Otworz GitHub"], defaultId: 0, cancelId: 0
+      }).then(r => { if (r.response === 1) shell.openExternal(`https://github.com/${REPO}/releases/latest`); }).catch(() => {});
+      return;
+    }
+    dialog.showMessageBox(win, {
+      type: "info", buttons: ["Zainstaluj teraz", "Anuluj"], defaultId: 0, cancelId: 1,
+      title: "Aktualizacja gotowa",
+      message: "Pobrano instalator aktualizacji.",
+      detail: "DiffHex zostanie zamkniety, zainstaluje sie nowa wersja i uruchomi automatycznie."
+    }).then(r => { if (r.response === 0) runInstaller(dest); }).catch(() => {});
+  });
+}
+
 function checkUpdates(manual) {
   ghLatest((err, rel) => {
     if (err || !rel || !rel.tag_name) {
@@ -96,13 +163,22 @@ function checkUpdates(manual) {
     const latest = rel.tag_name, cur = app.getVersion();
     if (cmpVer(latest, cur) > 0) {
       const asset = (rel.assets || []).find(a => /\.exe$/i.test(a.name || ""));
-      const dl = asset ? asset.browser_download_url : rel.html_url;
+      if (!asset) {
+        // brak pliku .exe w wydaniu – awaryjnie otworz strone wydania
+        dialog.showMessageBox(win, {
+          type: "info", buttons: ["Otworz GitHub", "Pozniej"], defaultId: 0, cancelId: 1,
+          title: "Dostepna aktualizacja",
+          message: `Dostepna jest nowsza wersja DiffHex (${latest}).`,
+          detail: `Masz wersje ${cur}. W wydaniu nie znaleziono instalatora .exe.`
+        }).then(r => { if (r.response === 0) shell.openExternal(`https://github.com/${REPO}/releases/latest`); }).catch(() => {});
+        return;
+      }
       dialog.showMessageBox(win, {
-        type: "info", buttons: ["Pobierz", "Pozniej"], defaultId: 0, cancelId: 1,
+        type: "info", buttons: ["Pobierz i zainstaluj", "Pozniej"], defaultId: 0, cancelId: 1,
         title: "Dostepna aktualizacja",
         message: `Dostepna jest nowsza wersja DiffHex (${latest}).`,
-        detail: `Masz wersje ${cur}. Pobrac instalator teraz?`
-      }).then(r => { if (r.response === 0) shell.openExternal(dl); }).catch(() => {});
+        detail: `Masz wersje ${cur}. Pobrac i zainstalowac teraz?`
+      }).then(r => { if (r.response === 0) doUpdate(latest, asset.browser_download_url); }).catch(() => {});
     } else if (manual) {
       dialog.showMessageBox(win, { type: "info", title: "Aktualizacje",
         message: "Masz najnowsza wersje DiffHex.", detail: `Wersja ${cur}.` });
