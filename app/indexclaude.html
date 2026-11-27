@@ -6,6 +6,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>try{var t=(JSON.parse(localStorage.getItem("hexdiff-prefs")||"{}")||{}).theme;if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(_){}</script>
+<script>/* Retro skin (Win95/3.11) tylko gdy aktywny jest motyw JASNY */
+(function(){function resolve(){try{var dt=document.documentElement.getAttribute("data-theme");var light=dt==="light"||(!dt&&!matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("retro",light)}catch(_){}}resolve();try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",resolve)}catch(_){}try{new MutationObserver(resolve).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]})}catch(_){}})();</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&display=swap">
@@ -723,6 +725,75 @@ header.bar{padding-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--l
 ::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--muted) 58%,transparent);background-clip:padding-box}
 ::-webkit-scrollbar-track{background:transparent}
 @media (prefers-reduced-motion:reduce){button,label.btn,input,textarea,select{transition:none}}
+/* ============ MOTYW RETRO: Windows 3.11 / 95 (tylko motyw jasny) ============ */
+html.retro{
+  --bg:#c0c0c0; --panel:#c0c0c0; --panel2:#c0c0c0; --line:#808080;
+  --fg:#000; --muted:#404040; --dim:#808080;
+  --accent:#000080; --accent-ink:#fff; --sel:rgba(0,0,128,.28); --cur:#000080;
+  --diff:#a80000; --diff-bg:#ffcfcf; --mod:#006a6a; --ok:#006000; --ok-bg:#cdeccd;
+  --pend:#6f5300; --pend-bg:#efe4bc; --tgt:#000080; --ai:#600060; --proj:#006a6a;
+  --ui:Tahoma,"MS Sans Serif",Geneva,Verdana,sans-serif;
+}
+html.retro *{border-radius:0!important;text-shadow:none!important}
+html.retro body{background:#008080}
+/* przyciski – wypukły bevel 3D */
+html.retro button,html.retro label.btn{
+  background:#c0c0c0;color:#000;border:2px solid transparent;padding:4px 11px;
+  box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf;
+}
+html.retro button:hover,html.retro label.btn:hover,html.retro button.primary:hover,html.retro .tgtbtn:hover,html.retro .xb:hover,html.retro .cpy button:hover{border-color:transparent;background:#c0c0c0}
+html.retro button:active,html.retro label.btn:active{
+  box-shadow:inset 1px 1px 0 #808080,inset -1px -1px 0 #fff,inset 2px 2px 0 #000,inset -2px -2px 0 #dfdfdf;
+  padding:5px 10px 3px 12px;
+}
+html.retro button:disabled{opacity:1;color:#808080;text-shadow:1px 1px 0 #fff!important}
+html.retro button.primary,html.retro .tgtbtn,html.retro .bbtn{background:#c0c0c0;color:#000;font-weight:700;border-color:transparent}
+html.retro button:focus-visible,html.retro input:focus-visible,html.retro label.btn:focus-within,html.retro .view:focus-visible{outline:1px dotted #000;outline-offset:-4px}
+/* pola edycji – wklęsły bevel 3D, białe tło */
+html.retro input[type=text],html.retro input[type=search],html.retro input[type=number],html.retro input[type=password],html.retro textarea,html.retro select,
+html.retro .aiout,html.retro .scrlog,html.retro .uscr,html.retro .uscr pre,html.retro #scrTxt,html.retro #scrNote,html.retro #aiPrompt,html.retro .vinbig,html.retro .cmd,html.retro .udl input,html.retro .msgf input,html.retro .msgf textarea,html.retro .modbar select,html.retro .form input,html.retro .drow select,html.retro .drow input[type=text]{
+  background:#fff;color:#000;border:2px solid transparent;
+  box-shadow:inset 1px 1px 0 #808080,inset -1px -1px 0 #fff,inset 2px 2px 0 #000,inset -2px -2px 0 #dfdfdf;
+}
+html.retro .drawer.ro #scrTxt,html.retro .drawer.ro #scrNote{background:#dcdcdc;color:#404040}
+/* panele / karty / okna – wypukły bevel 3D */
+html.retro .pane,html.retro .card,html.retro .xfer,html.retro .tools>.tg,html.retro #tgDock>.tg,html.retro .aiadm,html.retro .msgc,html.retro .help,html.retro .tree,html.retro .uscr.toolbar,html.retro .pill,html.retro kbd,html.retro .help kbd,html.retro .mbody kbd{
+  background:#c0c0c0;color:#000;border:2px solid transparent;
+  box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf;
+}
+html.retro .tools>.tg.min{background:#c0c0c0}
+html.retro .pill,html.retro kbd{padding:1px 5px}
+/* okna modalne i szuflada – wypukłe, lekki cień i granatowa belka tytułu */
+html.retro .mbox,html.retro .drawer{
+  background:#c0c0c0;color:#000;border:2px solid transparent;
+  box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf,3px 3px 0 rgba(0,0,0,.4)!important;
+}
+html.retro .mhead,html.retro .dhead{
+  background:linear-gradient(90deg,#000080,#1084d0);color:#fff;border-bottom:0;
+  margin:3px;padding:3px 4px 3px 8px;align-items:center;
+}
+html.retro .mhead h2,html.retro .dhead h2,html.retro .mhead h2 span{color:#fff;font-size:15px;font-weight:700}
+html.retro .mhead button,html.retro .dhead button{background:#c0c0c0;color:#000;padding:1px 7px;font-weight:700;min-width:24px}
+html.retro .mhead .mtabs button,html.retro .mhead button[aria-pressed]{padding:2px 8px}
+/* etykiety okien A/B/C – granatowa "belka" */
+html.retro .tag,html.retro .pane.active .tag,html.retro .pane[data-p="2"] .tag{background:#000080;color:#fff;font-weight:700;box-shadow:none;padding:2px 7px}
+/* pasek "Przenieś do C" / xfer buttons */
+html.retro .xb{background:#c0c0c0;color:#000;border:2px solid transparent;box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf}
+html.retro .xb:active{box-shadow:inset 1px 1px 0 #808080,inset -1px -1px 0 #fff,inset 2px 2px 0 #000,inset -2px -2px 0 #dfdfdf}
+/* toast jak okno komunikatu */
+html.retro .toast{background:#c0c0c0;color:#000;box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf,2px 2px 0 rgba(0,0,0,.4)}
+/* separatory / splitter */
+html.retro .sep{background:#808080;box-shadow:1px 0 0 #fff}
+html.retro .splitter::after{background:#c0c0c0;border:0;box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf}
+/* klasyczne, grube paski przewijania */
+html.retro *{scrollbar-width:auto;scrollbar-color:#c0c0c0 #dfdfdf}
+html.retro ::-webkit-scrollbar{width:16px;height:16px;background:#c0c0c0}
+html.retro ::-webkit-scrollbar-thumb{background:#c0c0c0;border:0;background-clip:border-box;box-shadow:inset -1px -1px 0 #000,inset 1px 1px 0 #fff,inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf}
+html.retro ::-webkit-scrollbar-thumb:hover{background:#c0c0c0}
+html.retro ::-webkit-scrollbar-track{background:repeating-conic-gradient(#c7c7c7 0% 25%,#b8b8b8 0% 50%) 0 0/4px 4px}
+html.retro ::-webkit-scrollbar-corner{background:#c0c0c0}
+/* tytuł aplikacji */
+html.retro .brand h1 span{color:#000080}
 </style>
 
 <header class="bar">
@@ -22887,6 +22958,7 @@ function chgBarDraw(){if(!chgB)return;const b=chgB,cv=$("#chgCv"),dpr=devicePixe
 ((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Drobna poprawka interfejsu: w oknie „Co nowego” plakietka „nowe” nie nachodzi już na tekst opisu zmian (szerokość kolumny z numerem wersji dopasowuje się do treści).": "Minor UI fix: in the What's new panel the “new” badge no longer overlaps the change text (the version column now sizes to its content)."});
 ((t,o)=>{for(const k in o)if(!(k in t))t[k]=o[k]})(EN_T,{"Moduł sum kontrolnych: wykrywanie algorytmu z 3 plików (oryginał, zmodyfikowany, zmodyfikowany z policzoną sumą) — DiffHex sam znajduje, gdzie leży suma i jak jest liczona, wykorzystując to, że „zmodyfikowany” i „zmodyfikowany + suma” różnią się tylko polem sumy. Nowa biblioteka presetów z podziałem na producenta i rodzinę sterownika (eksport/import JSON); każdy preset można policzyć i wpisać w dowolnym pliku.": "Checksum module: detect the algorithm from 3 files (original, modified, modified-with-checksum) — DiffHex finds where the checksum sits and how it is computed, using the fact that “modified” and “modified + checksum” differ only in the checksum field. New preset library grouped by manufacturer and controller family (JSON export/import); any preset can be computed and written into any file.", "Wykryj algorytm z 3 plików": "Detect algorithm from 3 files", "Wczytaj trzy pliki tego samego sterownika: oryginał, zmodyfikowany i zmodyfikowany z policzoną sumą. DiffHex sam znajdzie, gdzie leży suma i jak jest liczona.": "Load three files of the same controller: original, modified, and modified with the checksum corrected. DiffHex finds where the checksum is and how it is computed.", "Oryginał": "Original", "Zmodyfikowany": "Modified", "Zmod. + suma": "Modified + checksum", "Wykryj": "Detect", "Wykrywam…": "Detecting…", "Biblioteka presetów": "Preset library", "Zapisane schematy sum per producent i rodzina sterownika. Zastosuj preset, żeby policzyć i wpisać sumę w dowolnym pliku.": "Saved checksum schemes per manufacturer and controller family. Apply a preset to compute and write the checksum into any file.", "Producent": "Manufacturer", "Rodzina": "Family", "Zapisz preset": "Save preset", "Zapisz jako preset": "Save as preset", "Zastosuj": "Apply", "Eksport JSON": "Export JSON", "Import JSON": "Import JSON", "Pole sumy: ": "Checksum field: ", "zmiana: ": "change: ", "Nie rozpoznano standardowego algorytmu – dodaj definicję ręcznie, znając adres pola sumy powyżej.": "Standard algorithm not recognized — add a definition manually using the checksum field address above.", "Zapisano preset.": "Preset saved.", "Brak presetów. Wykryj algorytm z 3 plików albo zapisz ręcznie powyżej.": "No presets. Detect the algorithm from 3 files or save one manually above.", "Uzupełnij producenta i rodzinę, potem „Zapisz preset”.": "Fill in manufacturer and family, then “Save preset”."});
 const CHANGELOG=[
+  ["2.40",_L("Motyw jasny w stylu retro Windows 3.11 / 95: srebrne panele z wypukłymi ramkami 3D (bevel), kwadratowe rogi, granatowe belki tytułowe okien, pola edycji z wklęsłą ramką na białym tle, czcionka w stylu Tahoma i klasyczne, grube paski przewijania. Motyw ciemny bez zmian. Przełączasz go jak dotąd — ikoną motywu / w ustawieniach.")],
   ["2.39",_L("Aplikacja desktopowa (Windows): automatyczna aktualizacja. Gdy pojawi się nowsza wersja, po akceptacji DiffHex sam pobiera instalator (postęp widać na ikonie w pasku zadań), po cichu go instaluje i uruchamia nową wersję — bez otwierania GitHuba. Instalator od razu wiąże pliki .bin (oraz .ori/.mod/.mpc/.dtf/.frf/.dec) z aplikacją, więc otwierają się dwuklikiem.")],
   ["2.38",_L("Moduł sum kontrolnych: wykrywanie algorytmu z 3 plików (oryginał, zmodyfikowany, zmodyfikowany z policzoną sumą) — DiffHex sam znajduje, gdzie leży suma i jak jest liczona, wykorzystując to, że „zmodyfikowany” i „zmodyfikowany + suma” różnią się tylko polem sumy. Nowa biblioteka presetów z podziałem na producenta i rodzinę sterownika (eksport/import JSON); każdy preset można policzyć i wpisać w dowolnym pliku.")],
   ["2.37.2",_L("Drobna poprawka interfejsu: w oknie „Co nowego” plakietka „nowe” nie nachodzi już na tekst opisu zmian (szerokość kolumny z numerem wersji dopasowuje się do treści).")],
